@@ -32,6 +32,7 @@ background = [
     pygame.image.load(os.path.join(image_path, "background4.png"))]
 backgroundnumber = 0
 chapter = 1
+
 # 캐릭터 만들기
 character = pygame.image.load(os.path.join(image_path, "charcter_strate.png"))
 character_img_idx = pygame.image.load(os.path.join(image_path, "charcter_strate.png"))
@@ -42,7 +43,7 @@ character_image = [
 character_size = character.get_rect().size
 character_width = character_size[0]
 character_height = character_size[1]
-character_speed = 10
+character_speed = 25
 cha_num = 0
 
 ##############  챕터 1  #############
@@ -100,6 +101,12 @@ score = 0
 #잔디 만들기
 gras = 24 # 주민 수
 gra = gras + 1
+grasspot = [random.randint(1, 24), random.randint(1, 24), random.randint(1, 24), random.randint(1, 24), random.randint(1, 24), random.randint(1, 24)]
+for gp in range(0,6):
+    if grasspot[gp] == 18 or grasspot[gp] == 23 or grasspot[gp] == 24:
+        grasspot[gp] = int(grasspot[gp]) - random.randint(2,3)
+    print(grasspot[gp])
+
 for gm in range(1,gra):
     globals()[f'grass{gm}_img_idx'] = pygame.image.load(os.path.join(image_path, "grass1.png"))
     globals()[f'grass{gm}_size'] = globals()[f'grass{gm}_img_idx'].get_rect().size
@@ -123,8 +130,22 @@ for gm in range(1,gra):
         pygame.image.load(os.path.join(image_path, "grass3.png"))]
     globals()[f'grass{gm}_images_number'] = 0
 
+##############  챕터 3  #############
 
+sword = pygame.image.load(os.path.join(image_path, "sword.png"))
+rock = pygame.image.load(os.path.join(image_path, "rock.png"))
+swordkey = [
+    pygame.image.load(os.path.join(image_path, "up.png")),
+    pygame.image.load(os.path.join(image_path, "down.png")),
+    pygame.image.load(os.path.join(image_path, "left.png")),
+    pygame.image.load(os.path.join(image_path, "right.png"))]
+key_num = 0
+sword_x_pos = 550
+sword_y_pos = 500
+rock_x_pos = 300
+rock_y_pos = 600
 ####################################
+
 # Font 정의
 game_font = pygame.font.Font(None, 40)
 
@@ -155,6 +176,11 @@ while running:
 to_x = 0
 to_y = 0
 running = True
+walking = False
+delay = 100
+interval = 500
+pygame.key.set_repeat(delay, interval)
+
 while running:
     dt = clock.tick(40)
 
@@ -166,13 +192,24 @@ while running:
             pygame.quit()
         if event.type == pygame.KEYDOWN: # 방향키로 이동
             if event.key == pygame.K_LEFT:
-                to_x -= character_speed
+                to_x = 0 - character_speed
+                walking = True
+                key_press = 2
             if event.key == pygame.K_RIGHT:
-                to_x += character_speed
+                to_x = character_speed
+                walking = True
+                key_press = 3
             if event.key == pygame.K_UP:
-                to_y -= character_speed
+                to_y = 0 - character_speed
+                walking = True
+                key_press = 0
             if event.key == pygame.K_DOWN:
-                to_y += character_speed
+                to_y = character_speed
+                walking = True
+                key_press = 1
+            if event.key == pygame.K_SPACE:
+                    if chapter == 3:
+                        sword_y_pos -= 10
 
             if event.key == pygame.K_ESCAPE: #esc 누르면 종료
                 running = False
@@ -180,11 +217,20 @@ while running:
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
                 to_x = 0
+                walking = False
             elif event.key == pygame.K_UP or event.key == pygame.K_DOWN:
                 to_y = 0
+                walking = False
+
+        if walking == True:
+            cha_num += 1
+            if cha_num > 2:
+                cha_num = 1
+        elif walking == False:
+            cha_num = 0
     character_x_pos += to_x
     character_y_pos += to_y 
-    
+     
     #캐릭터 안나가게 하기
     if character_x_pos < 0:
         character_x_pos = 0
@@ -316,7 +362,7 @@ while running:
             #잔디 충돌
             for gm2 in range(1,gra):
                 if character_rect.colliderect(globals()[f'grass{gm2}_rect']):
-                    if gm2 == 3 or gm2 == 5 or gm2 == 7 or gm2 == 9:
+                    if gm2 in grasspot:
                         globals()[f'grass{gm2}_images_number'] = 1
                         screen.blit(globals()[f'grass{gm2}_images'][int(globals()[f'grass{gm2}_images_number'])], (globals()[f'grass{gm2}_x_pos'], globals()[f'grass{gm2}_y_pos']))
                         pygame.display.update()
@@ -347,9 +393,16 @@ while running:
                 character_x_pos, character_y_pos = (50, screen_height/2)
                 chapter = 3
         ############### 챕터 3 #############   
-        elif chapter == 3:
+        elif chapter == 3:  #칼 뽑기
             if character_x_pos >= screen_width/2 - 50 and character_x_pos <= screen_width/2 + 50 and character_y_pos >= screen_height/2 - 50 and character_y_pos <= screen_height/2 + 50:
                 backgroundnumber = 3
+
+            if backgroundnumber == 3:
+                if key_press == key_num:
+                    key_num = random.randint(0,3)
+                    sword_y_pos -= 20
+                else:
+                    sword_y_pos +=0.5
             if character_x_pos >= screen_width*(90/100) and character_y_pos >= screen_height*(1/4) and character_y_pos <= screen_height*(1/2):
                 chapter = 4
                 character_x_pos, character_y_pos = (screen_width/2, screen_height/2)
@@ -373,14 +426,20 @@ while running:
         screen.blit(point, (point_x_pos, point_y_pos))
         msg = game_font.render(str(score)+" / 5", True, (255, 255, 0))
         screen.blit(msg, ((screen_width/20)*18 , screen_height / 25))
-        screen.blit(character_image[0], (character_x_pos, character_y_pos))
+        screen.blit(character_image[cha_num], (character_x_pos, character_y_pos))
         pygame.display.update()
 
     if chapter == 2:
         for gm4 in range(1,gra):
             screen.blit(globals()[f'grass{gm4}_images'][int(globals()[f'grass{gm4}_images_number'])], (globals()[f'grass{gm4}_x_pos'], globals()[f'grass{gm4}_y_pos']))
 
-    screen.blit(character_image[0], (character_x_pos, character_y_pos))
+    if backgroundnumber  == 3:
+        screen.blit(sword, (sword_x_pos, sword_y_pos))
+        screen.blit(rock, (rock_x_pos, rock_y_pos))
+        screen.blit(swordkey[key_num], (100, 100))
+
+
+    screen.blit(character_image[cha_num], (character_x_pos, character_y_pos))
     pygame.display.update()
 
 # 게임 오버 메시지
