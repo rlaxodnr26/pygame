@@ -43,7 +43,7 @@ character_image = [
 character_size = character.get_rect().size
 character_width = character_size[0]
 character_height = character_size[1]
-character_speed = 30
+character_speed = 10
 cha_num = 0
 deadcount = 0
 
@@ -407,7 +407,7 @@ while running:
             if score <= 5:
                 if character_rect.colliderect(point_rect):
                     point_rd = random.randint(0,1)
-                    score += 5
+                    score += 1
                     if point_rd == 0:
                         point_rd_x = random.randint(point_width, house1_width - point_width)
                         point_rd_y = random.randint(house1_height + point_width, screen_height - point_width)
@@ -519,7 +519,7 @@ while running:
                         key_num[2] = key_num[3]
                         key_num[3] = random.randint(0,3)
 
-                        sword_y_pos -= 200
+                        sword_y_pos -= 20
                     elif key_press != key_num[0]:
                         sword_y_pos += 5
                     if sword_y_pos >= 380:
