@@ -1,11 +1,15 @@
 import pygame
 import random
+import os
 #######################################
 pygame.init()
 
 screen_width = 1280
 screen_height = 960
 screen = pygame.display.set_mode((screen_width, screen_height))
+
+current_path = os.path.dirname(__file__)
+image_path = os.path.join(current_path, "images")
 
 pygame.display.set_caption("Our game")
 
@@ -18,9 +22,9 @@ total_level_list = [10, 30, 50, 70, 90, 100, 120, 150, 180, 200, 250, 300, 350, 
 #####
 game_font = pygame.font.Font(None, 20)
 
-background = pygame.image.load("back.png")
+background = pygame.image.load(os.path.join(image_path, "back.png"))
 #####
-player = pygame.image.load("player_small.png")
+player = pygame.image.load(os.path.join(image_path, "player_small.png"))
 player_size = player.get_rect().size
 player_width = player_size[0]
 plyaer_height = player_size[1]
@@ -37,7 +41,7 @@ player_speed = 0.3
 #####
 enemy_list = list()
 class enemy_class:
-    enemy_image = pygame.image.load("enemy_small.png")
+    enemy_image = pygame.image.load(os.path.join(image_path, "enemy_small.png"))
     enemy_size = enemy_image.get_rect().size
     enemy_width = enemy_size[0]
     enemy_height = enemy_size[1]
@@ -120,6 +124,13 @@ class enemy_class:
         self.enemy_rect.left = self.enemy_x_pos
         self.enemy_rect.top = self.enemy_y_pos
 #####
+dragon = pygame.image.load(os.path.join(image_path, "dragon.png"))
+dragon_size = dragon.get_rect().size
+dragon_width = dragon_size[0]
+dragon_height = dragon_size[1]
+dragon_x_pos = (screen_width/2) - 90
+dragon_y_pos = 0
+#####
 running = True
 
 while running:
@@ -188,6 +199,8 @@ while running:
     for i in enemy_list:
         i.enemy_move()
         screen.blit(i.enemy_image, (i.enemy_x_pos, i.enemy_y_pos))
+
+    screen.blit(dragon, (dragon_x_pos, dragon_y_pos))
 
     enemy_count = game_font.render(str(len(enemy_list)), True, (255, 255, 255))
     screen.blit(enemy_count, (10, 10))
