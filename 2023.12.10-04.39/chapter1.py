@@ -1,7 +1,6 @@
 import os
 import pygame
 import random
-import threading
 import time
 ##############################################################
 # 기본 초기화 (반드시 해야 하는 것들)
@@ -45,9 +44,10 @@ character_width = character_size[0]
 character_height = character_size[1]
 character_speed = 10
 cha_num = 0
-deadcount = 0
+deadcount1 = 0
+deadcount2 = 0
 
-##############  챕터 1  #############
+############################################  챕터 1  ######################################
 
 # 주민 만들기
 spdm = 10 # 주민 속도 최소
@@ -97,7 +97,7 @@ point_x_pos = point_rd_x
 point_y_pos = point_rd_y
 score = 0
 
-##############  챕터 2  #############
+##########################################  챕터 2  #################################################
 
 #잔디 만들기
 gras = 24 # 주민 수
@@ -131,7 +131,7 @@ for gm in range(1,gra):
         pygame.image.load(os.path.join(image_path, "grass3.png"))]
     globals()[f'grass{gm}_images_number'] = 0
 
-##############  챕터 3  #############
+#####################################  챕터 3  ###########################################
 
 sword = pygame.image.load(os.path.join(image_path, "sword.png"))
 rock = pygame.image.load(os.path.join(image_path, "rock.png"))
@@ -160,7 +160,7 @@ sword_x_pos = 550
 sword_y_pos = 500
 rock_x_pos = 300
 rock_y_pos = 600
-#####################챕터 5###############
+###############################################챕터 5##########################################
 
 total_score = 0
 level_control = 10
@@ -251,7 +251,7 @@ class enemy_class:
         self.enemy_rect = self.enemy_image.get_rect()
         self.enemy_rect.left = self.enemy_x_pos
         self.enemy_rect.top = self.enemy_y_pos
-
+###########################################################################################################
 # Font 정의
 game_font = pygame.font.Font(None, 40)
 
@@ -337,7 +337,7 @@ while running:
             cha_num = 0
     character_x_pos += to_x
     character_y_pos += to_y 
-     
+    print(character_x_pos, character_y_pos)
     #캐릭터 안나가게 하기
     if character_x_pos < 0:
         character_x_pos = 0
@@ -379,7 +379,7 @@ while running:
         house2_rect_bottomline = pygame.Rect(house2_x_pos, house2_height, house2_width, 1)
 
     while (True):
-        ############### 챕터 1 #############   
+######################################################### 챕터 1 ####################################################################
         if chapter == 1: 
 
         # 점수 표시
@@ -393,7 +393,8 @@ while running:
                     character_x_pos = 50
                     character_y_pos = screen_height/2
                     if score < 5:
-                        score -= 1 
+                        score -= 1
+                        deadcount1 += 1 
             if score <= 0:
                 score = 0
             elif score >= 5:
@@ -407,7 +408,7 @@ while running:
             if score <= 5:
                 if character_rect.colliderect(point_rect):
                     point_rd = random.randint(0,1)
-                    score += 1
+                    score += 5
                     if point_rd == 0:
                         point_rd_x = random.randint(point_width, house1_width - point_width)
                         point_rd_y = random.randint(house1_height + point_width, screen_height - point_width)
@@ -431,7 +432,7 @@ while running:
             if character_rect.colliderect(house2_rect_leftline):
                 character_x_pos = house2_x_pos - character_width - 1
 
-            # 시민1 충돌
+            # 시민 충돌
             cm3 = 1
             while cm3 < pop:
                 if globals()[f'citizen{cm3}_y_pos'] > 0 and globals()[f'citizen{cm3}_y_pos'] < screen_height - globals()[f'citizen{cm3}_height']:
@@ -443,7 +444,7 @@ while running:
                         globals()[f'citizen{cm3}_way'] = 0
                     elif globals()[f'citizen{cm3}_rect'].colliderect(house2_rect_topline):
                         globals()[f'citizen{cm3}_way'] = 1
-                # 시민1 벽 충돌
+                # 시민 벽 충돌
                 elif globals()[f'citizen{cm3}_y_pos'] <= 0 or globals()[f'citizen{cm3}_y_pos'] >= screen_height - globals()[f'citizen{cm3}_height']:        
                     if globals()[f'citizen{cm3}_y_pos'] <= 0:
                         globals()[f'citizen{cm3}_y_pos'] = 0.1
@@ -455,11 +456,10 @@ while running:
                 cm3 += 1
                 if cm3 == pop:
                     break
-        ############### 챕터 2 #############        
+######################################################### 챕터 2 ########################################################################################        
         elif chapter == 2:
             pygame.display.update()
             backgroundnumber = 1
-
             #잔디 rect
             for gm1 in range(1,gra):
                 globals()[f'grass{gm1}_rect'] = globals()[f'grass{gm1}_img_idx'].get_rect()
@@ -476,7 +476,8 @@ while running:
                         pygame.time.delay(850)
                         character_x_pos = character_width
                         character_y_pos = 20
-                        deadcount += 1
+                        deadcount2 += 1
+                        print(deadcount2)
                         for gm3 in range(1,gra):
                             globals()[f'grass{gm3}_images_number'] = 0
                             if gm3 > 0 and gm3 <= 6:
@@ -495,15 +496,23 @@ while running:
                         globals()[f'grass{gm2}_images_number'] = 2
                         globals()[f'grass{gm2}_x_pos'] = -100
                         globals()[f'grass{gm2}_y_pos'] = -100
-
+            if event.type == pygame.KEYDOWN:
+                if deadcount2 >= 3:
+                    if event.key == pygame.K_r:
+                            grasspot = [random.randint(1, 24), random.randint(1, 24), random.randint(1, 24), random.randint(1, 24), random.randint(1, 24), random.randint(1, 24)]
+                            for gp in range(0,6):
+                                if grasspot[gp] == 18 or grasspot[gp] == 23 or grasspot[gp] == 24:
+                                    grasspot[gp] = int(grasspot[gp]) - random.randint(2,3)
+                                print(grasspot[gp])
             if character_x_pos >= screen_width - character_width and character_y_pos >= screen_height - character_height:
                 backgroundnumber = 2
-                character_x_pos, character_y_pos = (50, screen_height/2)
+                character_x_pos = 0
+                character_y_pos = 715
                 chapter = 3
-        ############### 챕터 3 #############   
+################################################## 챕터 3 ###################################################################   
         elif chapter == 3:  #칼 뽑기
-            a = 0
-            if character_x_pos >= screen_width/2 - 50 and character_x_pos <= screen_width/2 + 50 and character_y_pos >= screen_height/2 - 50 and character_y_pos <= screen_height/2 + 50:
+            swordscore = 0
+            if character_x_pos >= 510 and character_x_pos <= 740 and character_y_pos >= 520 and character_y_pos <= 560:
                 backgroundnumber = 3
 
             if backgroundnumber == 3:
@@ -532,13 +541,15 @@ while running:
                         screen.blit(msg, msg_rect)
                         pygame.display.update()
                         pygame.time.delay(800)
+                        character_x_pos = 0
+                        character_y_pos = 715
                         backgroundnumber = 2
                 else:
                     sword_y_pos += 1
                     if sword_y_pos >= 380:
                         sword_y_pos = 380
-                a = ((sword_y_pos - 380)/600) * 100
-                print(-a, "%")
+                swordscore = ((sword_y_pos - 380)/600) * 100
+                print(-swordscore, "%")
             if character_x_pos >= screen_width*(90/100) and character_y_pos >= screen_height*(1/4) and character_y_pos <= screen_height*(1/2):
                 character_x_pos, character_y_pos = (screen_width/2, screen_height/2)
                 chapter = 4
@@ -586,7 +597,7 @@ while running:
         screen.blit(swordkey_2[key_num[1]], (520, 780))
         screen.blit(swordkey_3[key_num[2]], (700, 780))
         screen.blit(swordkey_4[key_num[3]], (880, 780))
-        msg = pygame.font.Font(None, 80).render(str(int(-a))+"%", True, (0, 0, 0))
+        msg = pygame.font.Font(None, 80).render(str(int(-swordscore))+"%", True, (0, 0, 0))
         screen.blit(msg, ((screen_width/20)*15 , screen_height / 20))
         pygame.display.update()
     if chapter == 4:
@@ -608,7 +619,6 @@ msg = game_font.render("Game_over", True, (255, 255, 0)) # 노란색
 msg_rect = msg.get_rect(center=(int(screen_width / 2), int(screen_height / 2)))
 screen.blit(msg, msg_rect)
 pygame.display.update()
-
 # 2초 대기
 pygame.time.delay(2000)
 
