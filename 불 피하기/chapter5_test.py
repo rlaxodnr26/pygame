@@ -19,6 +19,9 @@ total_score = 0
 level_control = 10
 total_level = 0
 total_level_list = [10, 30, 50, 70, 90, 100, 120, 150, 180, 200, 250, 300, 350, 400, 10000000]
+
+score = 0
+level = 0
 #####
 game_font = pygame.font.Font(None, 20)
 
@@ -102,34 +105,51 @@ class enemy_class:
         if self.enemy_spawnPoint == 'UP':
             if boundary_LEFT() or boundary_RIGHT() or boundary_DOWN():
                 enemy_list.remove(self)
-                total_score += 1
 
         if self.enemy_spawnPoint == 'DOWN':
             if boundary_LEFT() or boundary_RIGHT() or boundary_UP():
                 enemy_list.remove(self)
-                total_score += 1
 
         if self.enemy_spawnPoint == 'LEFT':
             if boundary_UP() or boundary_DOWN() or boundary_RIGHT():
                 enemy_list.remove(self)
-                total_score += 1
 
         if self.enemy_spawnPoint == 'RIGHT':
             if boundary_UP() or boundary_DOWN() or boundary_LEFT():
                 enemy_list.remove(self)
-                total_score += 1
 
     def enemy_coll(self):
         self.enemy_rect = self.enemy_image.get_rect()
         self.enemy_rect.left = self.enemy_x_pos
         self.enemy_rect.top = self.enemy_y_pos
 #####
-dragon = pygame.image.load(os.path.join(image_path, "dragon.png"))
-dragon_size = dragon.get_rect().size
-dragon_width = dragon_size[0]
-dragon_height = dragon_size[1]
-dragon_x_pos = (screen_width/2) - 90
-dragon_y_pos = 0
+dragon_front = pygame.image.load(os.path.join(image_path, "dragon_front.png"))
+dragon_front_size = dragon_front.get_rect().size
+dragon_front_width = dragon_front_size[0]
+dragon_front_height = dragon_front_size[1]
+dragon_front_x_pos = (screen_width/2) - (dragon_front_width/2)
+dragon_front_y_pos = 0
+
+dragon_back = pygame.image.load(os.path.join(image_path, "dragon_back.png"))
+dragon_back_size = dragon_back.get_rect().size
+dragon_back_width = dragon_back_size[0]
+dragon_back_height = dragon_back_size[1]
+dragon_back_x_pos = (screen_width/2) - (dragon_back_width/2)
+dragon_back_y_pos = (screen_height) - (dragon_back_height)
+
+dragon_left = pygame.image.load(os.path.join(image_path, "dragon_left.png"))
+dragon_left_size = dragon_left.get_rect().size
+dragon_left_width = dragon_left_size[0]
+dragon_left_height = dragon_left_size[1]
+dragon_left_x_pos = 0
+dragon_left_y_pos = (screen_height/2) - (dragon_left_height/2)
+
+dragon_right = pygame.image.load(os.path.join(image_path, "dragon_right.png"))
+dragon_right_size = dragon_right.get_rect().size
+dragon_right_width = dragon_right_size[0]
+dragon_right_height = dragon_right_size[1]
+dragon_right_x_pos = (screen_width) - (dragon_right_width)
+dragon_right_y_pos = (screen_height/2) - (dragon_right_height/2)
 #####
 running = True
 
@@ -198,7 +218,10 @@ while running:
         i.enemy_move()
         screen.blit(i.enemy_image, (i.enemy_x_pos, i.enemy_y_pos))
 
-    screen.blit(dragon, (dragon_x_pos, dragon_y_pos))
+    screen.blit(dragon_front, (dragon_front_x_pos, dragon_front_y_pos))
+    screen.blit(dragon_back, (dragon_back_x_pos, dragon_back_y_pos))
+    screen.blit(dragon_left, (dragon_left_x_pos, dragon_left_y_pos))
+    screen.blit(dragon_right, (dragon_right_x_pos, dragon_right_y_pos))
 
     enemy_count = game_font.render(str(len(enemy_list)), True, (255, 255, 255))
     screen.blit(enemy_count, (10, 10))
