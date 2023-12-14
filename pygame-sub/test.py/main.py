@@ -62,7 +62,13 @@ notesumt = 0
 a = 0
 aa = 00
 
+combo = 0
+combo_effect = 0
+combo_effect2 = 0
+miss_anim = 0
+last_combo = 0
 
+combo_time = Time + 1
 
 while main:
     while ingame:
@@ -81,7 +87,11 @@ while main:
         ingame_font_combo = pygame.font.Font(None, int((w / 38) * combo_effect2))
         combo_text = ingame_font_combo.render(str(combo), False, (255, 255, 255))
 
-        rate_text = ingame_font_rate.render(str(rate), alse, (255, 255, 255))
+        rate_text = ingame_font_rate.render(str(rate), False, (255, 255, 255))
+        rate_text = pygame.transform.scale(rate_text, (int(w / 110 * len(rate) * combo_effect2), int((w / 58 * combo_effect * combo_effect2))))
+
+        ingame_font_miss = pygame.font.Font(None, int((w / 38 * miss_anim)))
+        miss_text = ingame_font_miss.render(str(last_combo), False, (255, 0, 0))
 
         if fps == 0:
             fps = maxframe
