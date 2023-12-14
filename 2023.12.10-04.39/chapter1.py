@@ -22,28 +22,35 @@ pygame.display.set_caption("Our Game")
 current_path = os.path.dirname(__file__) # 현재 파일의 위치 반환
 image_path = os.path.join(current_path, "images") # images 폴더 위치 반환
 totaltime = pygame.time.get_ticks()
-
 # 배경 만들기
-background = [
-    pygame.image.load(os.path.join(image_path, "background.png")),
+background = [0,
+    pygame.image.load(os.path.join(image_path, "background1.png")),
     pygame.image.load(os.path.join(image_path, "background2.png")),
     pygame.image.load(os.path.join(image_path, "background3.png")),
-    pygame.image.load(os.path.join(image_path, "background3.5.png")),
-    pygame.image.load(os.path.join(image_path, "background4.png"))]
-backgroundnumber = 0
+    pygame.image.load(os.path.join(image_path, "background4.png")),
+    pygame.image.load(os.path.join(image_path, "background5.png")),
+    pygame.image.load(os.path.join(image_path, "background6.png"))]
+backgroundnumber = 1
 chapter = 1
 
 # 캐릭터 만들기
 character = pygame.image.load(os.path.join(image_path, "charcter_strate.png"))
 character_img_idx = pygame.image.load(os.path.join(image_path, "charcter_strate.png"))
+
 character_image = [
     pygame.image.load(os.path.join(image_path, "charcter_strate.png")),
     pygame.image.load(os.path.join(image_path, "charcter_strate1.png")),
     pygame.image.load(os.path.join(image_path, "charcter_strate2.png"))]
+
+character_image_sword = [
+    pygame.image.load(os.path.join(image_path, "charcter_strate_sword.png")),
+    pygame.image.load(os.path.join(image_path, "charcter_strate1_sword.png")),
+    pygame.image.load(os.path.join(image_path, "charcter_strate2_sword.png"))]
+
 character_size = character.get_rect().size
 character_width = character_size[0]
 character_height = character_size[1]
-character_speed = 25
+character_speed = 30
 cha_num = 0
 deadcount1 = 0
 deadcount2 = 0
@@ -107,8 +114,6 @@ grasspot = [random.randint(1, 24), random.randint(1, 24), random.randint(1, 24),
 for gp in range(0,6):
     if grasspot[gp] == 18 or grasspot[gp] == 23 or grasspot[gp] == 24:
         grasspot[gp] = int(grasspot[gp]) - random.randint(2,3)
-    print(grasspot[gp])
-
 for gm in range(1,gra):
     globals()[f'grass{gm}_img_idx'] = pygame.image.load(os.path.join(image_path, "grass1.png"))
     globals()[f'grass{gm}_size'] = globals()[f'grass{gm}_img_idx'].get_rect().size
@@ -187,12 +192,12 @@ barrier2_rect_bottomline = pygame.Rect(barrier2_x_pos, barrier2_height, barrier2
 
 swordwin = 0
 
-###############################################챕터 5##########################################
+###############################################챕터 4##########################################
 
 total_score = 0
 level_control = 10
 total_level = 0
-total_level_list = [10, 30, 50, 70, 90, 100, 120, 150, 180, 200, 250, 300, 350, 400, 10000000]
+total_level_list = [10, 13, 16, 19, 21, 24]
 
 enemy_list = list()
 class enemy_class:
@@ -211,7 +216,7 @@ class enemy_class:
     enemy_rect.top = enemy_y_pos
 
     def __init__(self):
-        self.enemy_speed = random.choice([3.0, 3.5, 4.0, 4.5, 5.0])
+        self.enemy_speed = random.choice([1.0, 1.5, 2.0, 2.5, 3.0])
         self.enemy_spawnPoint = random.choice(['UP', 'DOWN', 'LEFT', 'RIGHT'])
 
         # 스폰 지점 설정
@@ -257,27 +262,54 @@ class enemy_class:
         if self.enemy_spawnPoint == 'UP':
             if boundary_LEFT() or boundary_RIGHT() or boundary_DOWN():
                 enemy_list.remove(self)
-                total_score += 1
 
         if self.enemy_spawnPoint == 'DOWN':
             if boundary_LEFT() or boundary_RIGHT() or boundary_UP():
                 enemy_list.remove(self)
-                total_score += 1
 
         if self.enemy_spawnPoint == 'LEFT':
             if boundary_UP() or boundary_DOWN() or boundary_RIGHT():
                 enemy_list.remove(self)
-                total_score += 1
 
         if self.enemy_spawnPoint == 'RIGHT':
             if boundary_UP() or boundary_DOWN() or boundary_LEFT():
                 enemy_list.remove(self)
-                total_score += 1
 
     def enemy_coll(self):
         self.enemy_rect = self.enemy_image.get_rect()
         self.enemy_rect.left = self.enemy_x_pos
         self.enemy_rect.top = self.enemy_y_pos
+
+dragon_front = pygame.image.load(os.path.join(image_path, "dragon_front.png"))
+dragon_front_size = dragon_front.get_rect().size
+dragon_front_width = dragon_front_size[0]
+dragon_front_height = dragon_front_size[1]
+dragon_front_x_pos = (screen_width/2) - (dragon_front_width/2)
+dragon_front_y_pos = 0
+
+dragon_back = pygame.image.load(os.path.join(image_path, "dragon_back.png"))
+dragon_back_size = dragon_back.get_rect().size
+dragon_back_width = dragon_back_size[0]
+dragon_back_height = dragon_back_size[1]
+dragon_back_x_pos = (screen_width/2) - (dragon_back_width/2)
+dragon_back_y_pos = (screen_height) - (dragon_back_height)
+
+dragon_left = pygame.image.load(os.path.join(image_path, "dragon_left.png"))
+dragon_left_size = dragon_left.get_rect().size
+dragon_left_width = dragon_left_size[0]
+dragon_left_height = dragon_left_size[1]
+dragon_left_x_pos = 0
+dragon_left_y_pos = (screen_height/2) - (dragon_left_height/2)
+
+dragon_right = pygame.image.load(os.path.join(image_path, "dragon_right.png"))
+dragon_right_size = dragon_right.get_rect().size
+dragon_right_width = dragon_right_size[0]
+dragon_right_height = dragon_right_size[1]
+dragon_right_x_pos = (screen_width) - (dragon_right_width)
+dragon_right_y_pos = (screen_height/2) - (dragon_right_height/2)
+
+
+
 ###########################################################################################################
 # Font 정의
 game_font = pygame.font.Font(None, 40)
@@ -340,8 +372,9 @@ while running:
                 walking = True
                 key_press = 1
             if event.key == pygame.K_SPACE:
-                    if chapter == 3:
-                        sword_y_pos -= 10
+                if chapter == 3:
+                    sword_y_pos -= 10
+                key_press = 4
             
 
             if event.key == pygame.K_ESCAPE: #esc 누르면 종료
@@ -363,7 +396,6 @@ while running:
             cha_num = 0
     character_x_pos += to_x
     character_y_pos += to_y 
-    print(character_x_pos, character_y_pos)
     #캐릭터 안나가게 하기
     if character_x_pos < 0:
         character_x_pos = 0
@@ -407,7 +439,6 @@ while running:
     while (True):
 ######################################################### 챕터 1 ####################################################################
         totaltime = pygame.time.get_ticks()
-        print(totaltime/1000)
         if chapter == 1: 
         # 점수 표시
             msg = game_font.render(str(score)+" / 5", True, (255, 255, 0))
@@ -430,6 +461,12 @@ while running:
                     character_x_pos = 0
                     character_y_pos = 0
                     chapter = 2
+                    screen.fill((0,0,0))
+                    msg = pygame.font.Font(None, 50).render("Clear!     Clear Time : " + str(totaltime/1000), True, (255, 255, 0))
+                    msg_rect = msg.get_rect(center=(int(screen_width / 2), int(screen_height / 2)))
+                    screen.blit(msg, msg_rect)
+                    pygame.display.update()
+                    pygame.time.delay(1500)
                     
             #별 충돌
             if score <= 5:
@@ -486,7 +523,7 @@ while running:
 ######################################################### 챕터 2 ########################################################################################        
         elif chapter == 2:
             pygame.display.update()
-            backgroundnumber = 1
+            backgroundnumber = 2
             #잔디 rect
             for gm1 in range(1,gra):
                 globals()[f'grass{gm1}_rect'] = globals()[f'grass{gm1}_img_idx'].get_rect()
@@ -504,7 +541,6 @@ while running:
                         character_x_pos = character_width
                         character_y_pos = 20
                         deadcount2 += 1
-                        print(deadcount2)
                         for gm3 in range(1,gra):
                             globals()[f'grass{gm3}_images_number'] = 0
                             if gm3 > 0 and gm3 <= 6:
@@ -530,9 +566,14 @@ while running:
                             for gp in range(0,6):
                                 if grasspot[gp] == 18 or grasspot[gp] == 23 or grasspot[gp] == 24:
                                     grasspot[gp] = int(grasspot[gp]) - random.randint(2,3)
-                                print(grasspot[gp])
-            if character_x_pos >= screen_width - character_width and character_y_pos >= screen_height - character_height:
-                backgroundnumber = 2
+            if character_x_pos >= 1150 and character_y_pos >= 850:
+                screen.fill((0,0,0))
+                msg = pygame.font.Font(None, 50).render("Clear!     Clear Time : " + str(totaltime/1000), True, (255, 255, 0))
+                msg_rect = msg.get_rect(center=(int(screen_width / 2), int(screen_height / 2)))
+                screen.blit(msg, msg_rect)
+                pygame.display.update()
+                pygame.time.delay(1000)
+                backgroundnumber = 3
                 character_x_pos = 0
                 character_y_pos = 715
                 chapter = 3
@@ -551,10 +592,15 @@ while running:
                 character_y_pos = 775
                 
             if character_x_pos >= 510 and character_x_pos <= 740 and character_y_pos >= 520 and character_y_pos <= 560:
-                backgroundnumber = 3
+                screen.fill((0, 0, 0))
+                msg = pygame.font.Font(None, 70).render("Entering...", True, (255, 255, 0))
+                msg_rect = msg.get_rect(center=(int(screen_width / 2), int(screen_height / 2)))
+                screen.blit(msg, msg_rect)
+                pygame.display.update()
+                pygame.time.delay(800)
+                backgroundnumber = 4
 
-            if backgroundnumber == 3:
-                print(swordwin)
+            if backgroundnumber == 4:
                 character_x_pos = 0
                 character_y_pos = 1200
                 if event.type == pygame.KEYDOWN:
@@ -565,7 +611,7 @@ while running:
                         key_num[2] = key_num[3]
                         key_num[3] = random.randint(0,3)
 
-                        sword_y_pos -= 2000
+                        sword_y_pos -= 200
                     elif key_press != key_num[0]:
                         sword_y_pos += 5
                     if sword_y_pos >= 380:
@@ -574,54 +620,85 @@ while running:
                         swordscore = 100
                         sword_y_pos = -220
                         swordwin = 1
+                        backgroundnumber = 5
+                        character_image = character_image_sword
                         pygame.time.delay(100)
-                        msg = pygame.font.Font(None, 280).render("complete", True, (255, 255, 0))
+                        msg = pygame.font.Font(None, 100).render("Clear!", True, (255, 255, 0))
                         msg_rect = msg.get_rect(center=(int(screen_width / 2), int(screen_height / 2)))
                         screen.blit(msg, msg_rect)
                         pygame.display.update()
-                        pygame.time.delay(800)
-                        character_x_pos = 0
-                        character_y_pos = 715
-                        backgroundnumber = 2
+                        pygame.time.delay(900)
+                        character_x_pos = 630
+                        character_y_pos = 695
                 else:
                     sword_y_pos += 1
                     if sword_y_pos >= 380:
                         sword_y_pos = 380
-                swordscore = ((sword_y_pos - 380)/600) * 100
-                print(-swordscore, "%")
+                swordscore = ((sword_y_pos - 380)/600) * 10
 
             if sword_y_pos <= 300:
                 if character_y_pos <= 635:
                     character_y_pos = 635
             if character_x_pos >= 1230:
-                character_x_pos, character_y_pos = (screen_width/2, screen_height/2)
-                chapter = 4
+                if backgroundnumber == 5:
+                    msg = pygame.font.Font(None, 50).render("Clear!    clear time : " + str(totaltime/1000), True, (255, 255, 0))
+                    msg_rect = msg.get_rect(center=(int(screen_width / 2), int(screen_height / 2)))
+                    screen.blit(msg, msg_rect)
+                    pygame.display.update()
+                    pygame.time.delay(900)
+                    character_x_pos, character_y_pos = (screen_width/2, screen_height/2)
+                    chapter = 4
+                else:
+                    msg = pygame.font.Font(None, 50).render("You need weapon!", True, (255, 255, 0))
+                    msg_rect = msg.get_rect(center=(int(screen_width / 2), int(screen_height / 2)))
+                    screen.blit(msg, msg_rect)
+                    pygame.display.update()
             pygame.display.update()
 
         ############### 챕터 4 #############   
         elif chapter == 4:
-            backgroundnumber = 4
+            backgroundnumber = 6
             character_speed = 10
+
+            dragon_front_rect = dragon_front.get_rect()
+            dragon_front_rect.left = dragon_front_x_pos
+            dragon_front_rect.top = dragon_front_y_pos
+
+            dragon_back_rect = dragon_back.get_rect()
+            dragon_back_rect.left = dragon_back_x_pos
+            dragon_back_rect.top = dragon_back_y_pos
+            
+            dragon_left_rect = dragon_left.get_rect()
+            dragon_left_rect.left = dragon_left_x_pos
+            dragon_left_rect.top = dragon_left_y_pos
+            
+            dragon_right_rect = dragon_right.get_rect()
+            dragon_right_rect.left = dragon_right_x_pos
+            dragon_right_rect.top = dragon_right_y_pos
+
+            for i in enemy_list:
+                i.enemy_coll()
+                if character_rect.colliderect(i.enemy_rect):
+                    character_x_pos = (screen_width / 2) - (character_width / 2)
+                    character_y_pos = (screen_height / 2) - (character_height / 2)
+                    total_score = 0
+
             if total_score >= total_level_list[total_level]:
                 total_level += 1
 
             if total_level + level_control >= len(enemy_list):
                 enemy_list.append(enemy_class())
-            for i in enemy_list:
-                i.enemy_coll()
-                if character_rect.colliderect(i.enemy_rect):
-                    print("충돌")
-                    print("점수 : ", total_score)
             pygame.display.update()
 
         else:
             continue
         break
 
-    # 5. 화면에 그리기
+##############################################출력#####################################################################################
     screen.blit(background[backgroundnumber], (0, 0))
-
     if chapter == 1:
+        if score >= 5:
+            pygame.draw.rect(screen, (255,255,0), (1120, 290, 300, 165))
         for cm1 in range(1,pop):
             screen.blit(globals()[f'citizen{cm1}_forward_images'][not(globals()[f'citizen{cm1}_way'])], (globals()[f'citizen{cm1}_x_pos'], globals()[f'citizen{cm1}_y_pos']))
         screen.blit(point, (point_x_pos, point_y_pos))
@@ -634,7 +711,7 @@ while running:
         for gm4 in range(1,gra):
             screen.blit(globals()[f'grass{gm4}_images'][int(globals()[f'grass{gm4}_images_number'])], (globals()[f'grass{gm4}_x_pos'], globals()[f'grass{gm4}_y_pos']))
 
-    if backgroundnumber  == 3:
+    if backgroundnumber  ==  4:
         screen.blit(sword, (sword_x_pos, sword_y_pos))
         screen.blit(rock, (rock_x_pos, rock_y_pos))
         screen.blit(swordkey_1[key_num[0]], (300, 780))
@@ -644,17 +721,56 @@ while running:
         msg = pygame.font.Font(None, 80).render(str(int(-swordscore))+"%", True, (0, 0, 0))
         screen.blit(msg, ((screen_width/20)*15 , screen_height / 20))
         pygame.display.update()
-    if chapter == 4:
-            for i in enemy_list:
-                i.enemy_move()
-                screen.blit(i.enemy_image, (i.enemy_x_pos, i.enemy_y_pos))
 
+    if backgroundnumber == 6:
+    
+            if total_score == 0:
+                screen.blit(dragon_front, (dragon_front_x_pos, dragon_front_y_pos))
+            if key_press == 4:
+                if character_rect.colliderect(dragon_front_rect):
+                    total_score = 3
+                if character_rect.colliderect(dragon_back_rect):
+                    total_score = 6
+                if character_rect.colliderect(dragon_left_rect):
+                    total_score = 9
+                if character_rect.colliderect(dragon_right_rect):
+                    total_score = 12
+               
+
+            if total_score == 3:
+                screen.blit(dragon_back, (dragon_back_x_pos, dragon_back_y_pos))
+
+            if total_score == 6:
+                screen.blit(dragon_left, (dragon_left_x_pos, dragon_left_y_pos))
+
+            if total_score == 9:
+                screen.blit(dragon_right, (dragon_right_x_pos, dragon_right_y_pos))
             enemy_count = game_font.render(str(len(enemy_list)), True, (255, 255, 255))
             screen.blit(enemy_count, (10, 10))
 
+            for i in enemy_list:
+                i.enemy_move()
+                screen.blit(i.enemy_image, (i.enemy_x_pos, i.enemy_y_pos))
+            if total_score >= 12:
+                msg = pygame.font.Font(None, 50).render("Clear!    clear time : " + str(totaltime/1000), True, (255, 255, 0))
+                msg_rect = msg.get_rect(center=(int(screen_width / 2), int(screen_height / 2)))
+                screen.blit(msg, msg_rect)
+                print(totaltime)
+                pygame.display.update()
+                pygame.time.delay(2000)
+                pygame.quit()
             score = game_font.render(str(int(total_score)), True, (255, 255, 255))
             screen.blit(score, (screen_width - 50, 10))
-            
+
+
+    if chapter == 1:
+        msg = game_font.render(str(totaltime/1000), True, (255, 255, 0))
+        screen.blit(msg, ((screen_width/20)*2 , screen_height / 25))
+    else:
+        msg = game_font.render(str(totaltime/1000), True, (255, 255, 0))
+        screen.blit(msg, ((screen_width/20)*18 , screen_height / 25))
+ 
+
     screen.blit(character_image[cha_num], (character_x_pos, character_y_pos))
     pygame.display.update()
 
