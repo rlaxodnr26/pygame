@@ -1,6 +1,7 @@
 import pygame
 import random
 import os
+import time
 ######
 pygame.init()
 
@@ -18,29 +19,23 @@ clock = pygame.time.Clock()
 total_score = 0
 level_control = 10
 total_level = 0
-total_level_list = [10, 30, 50, 70, 90, 100, 120, 150, 180, 200, 250, 300, 350, 400, 10000000]
-
-score = 0
-level = 0
+total_level_list = [10, 13, 16, 19, 21, 24]
 #####
-game_font = pygame.font.Font(None, 20)
+game_font = pygame.font.Font(None, 40)
 
 background = pygame.image.load(os.path.join(image_path, "back.png"))
 #####
 player = pygame.image.load(os.path.join(image_path, "player_small.png"))
 player_size = player.get_rect().size
 player_width = player_size[0]
-plyaer_height = player_size[1]
+player_height = player_size[1]
 player_x_pos = (screen_width / 2) - (player_width / 2)
-player_y_pos = (screen_height / 2) - (plyaer_height / 2)
-
-player_speed = 0.6
-
+player_y_pos = (screen_height / 2) - (player_height / 2)
 
 player_to_x = 0
 player_to_y = 0
 
-player_speed = 0.3
+player_speed = 0.4
 #####
 enemy_list = list()
 class enemy_class:
@@ -150,8 +145,6 @@ dragon_right_width = dragon_right_size[0]
 dragon_right_height = dragon_right_size[1]
 dragon_right_x_pos = (screen_width) - (dragon_right_width)
 dragon_right_y_pos = (screen_height/2) - (dragon_right_height/2)
-
-dragon_order = 0
 #####
 running = True
 
@@ -189,16 +182,13 @@ while running:
         player_x_pos = screen_width - player_width
     if player_y_pos < 0:
         player_y_pos = 0
-    elif player_y_pos > screen_height - plyaer_height:
-        player_y_pos = screen_height - plyaer_height
+    elif player_y_pos > screen_height - player_height:
+        player_y_pos = screen_height - player_height
 
     # 적 생성
-    if total_score >= total_level_list[total_level]:
-        total_level += 1
 
-    if total_level + level_control >= len(enemy_list):
+    if total_score + level_control >= len(enemy_list):
         enemy_list.append(enemy_class())
-
 
     # 충돌 처리
     player_rect = player.get_rect()
@@ -221,10 +211,13 @@ while running:
     dragon_right_rect.left = dragon_right_x_pos
     dragon_right_rect.top = dragon_right_y_pos
 
-    '''for i in enemy_list:
+    for i in enemy_list:
         i.enemy_coll()
         if player_rect.colliderect(i.enemy_rect):
-            running = False'''
+            player_x_pos = (screen_width / 2) - (player_width / 2)
+            player_y_pos = (screen_height / 2) - (player_height / 2)
+            total_score = 0
+
 
 
     # 화면에 그리기
@@ -236,34 +229,31 @@ while running:
         i.enemy_move()
         screen.blit(i.enemy_image, (i.enemy_x_pos, i.enemy_y_pos))
     
-    if dragon_order == 0:
+    if total_score == 0:
         screen.blit(dragon_front, (dragon_front_x_pos, dragon_front_y_pos))
     
     if player_rect.colliderect(dragon_front_rect):
-        dragon_order = 1
+        total_score = 3
 
-    if dragon_order == 1:
+    if total_score == 3:
         screen.blit(dragon_back, (dragon_back_x_pos, dragon_back_y_pos))
 
     if player_rect.colliderect(dragon_back_rect):
-        dragon_order = 2
+        total_score = 6
 
-    if dragon_order == 2:
+    if total_score == 6:
         screen.blit(dragon_left, (dragon_left_x_pos, dragon_left_y_pos))
 
     if player_rect.colliderect(dragon_left_rect):
-        dragon_order = 3
+        total_score = 9
     
-    if dragon_order == 3:
+    if total_score == 9:
         screen.blit(dragon_right, (dragon_right_x_pos, dragon_right_y_pos))
 
     if player_rect.colliderect(dragon_right_rect):
-        dragon_order = 4
+        total_score = 12
 
-    enemy_count = game_font.render(str(len(enemy_list)), True, (255, 255, 255))
-    screen.blit(enemy_count, (10, 10))
-
-    score = game_font.render(str(int(total_score)), True, (255, 255, 255))
-    screen.blit(score, (screen_width - 50, 10))
+    score = game_font.render(str(total_score//3)+" / 4", True, (255, 255, 255))
+    screen.blit(score, ((screen_width/20)*18 , screen_height / 25))
 
     pygame.display.update()
