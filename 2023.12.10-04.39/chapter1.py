@@ -5,8 +5,8 @@ import time
 ##############################################################
 # 기본 초기화 (반드시 해야 하는 것들)
 pygame.init()
-
 clock = pygame.time.Clock()
+
 # 화면 크기 설정
 screen_width = 1280 # 가로 크기
 screen_height = 960 # 세로 크기
@@ -21,6 +21,7 @@ pygame.display.set_caption("Our Game")
 # 1. 사용자 게임 초기화 (배경 화면, 게임 이미지, 좌표, 속도, 폰트 등)
 current_path = os.path.dirname(__file__) # 현재 파일의 위치 반환
 image_path = os.path.join(current_path, "images") # images 폴더 위치 반환
+totaltime = pygame.time.get_ticks()
 
 # 배경 만들기
 background = [
@@ -42,7 +43,7 @@ character_image = [
 character_size = character.get_rect().size
 character_width = character_size[0]
 character_height = character_size[1]
-character_speed = 10
+character_speed = 25
 cha_num = 0
 deadcount1 = 0
 deadcount2 = 0
@@ -156,10 +157,36 @@ swordkey_4 = [
     pygame.image.load(os.path.join(image_path, "left.png")),
     pygame.image.load(os.path.join(image_path, "right.png"))]
 key_num = [0,1,2,3]
+
 sword_x_pos = 550
 sword_y_pos = 500
 rock_x_pos = 300
 rock_y_pos = 600
+
+barrier1_width = 525
+barrier1_height = 625
+barrier1_x_pos = 0
+barrier1_y_pos = 0
+
+barrier2_width = 1280 - 810
+barrier2_height = 625
+barrier2_x_pos = 810
+barrier2_y_pos = 0
+
+barrier1_rect = pygame.Rect(barrier1_x_pos, barrier1_y_pos, barrier1_width, barrier1_height)
+barrier1_rect_leftline = pygame.Rect(barrier1_x_pos, barrier1_y_pos, 1, barrier1_height)
+barrier1_rect_rightline = pygame.Rect(barrier1_width, barrier1_y_pos, 1, barrier1_height)
+barrier1_rect_topline = pygame.Rect(barrier1_x_pos, barrier1_y_pos, barrier1_width, 1)
+barrier1_rect_bottomline = pygame.Rect(barrier1_x_pos, barrier1_height, barrier1_width, 1)
+
+barrier2_rect = pygame.Rect(barrier2_x_pos, barrier2_y_pos, barrier2_width, barrier2_height)
+barrier2_rect_leftline = pygame.Rect(barrier2_x_pos, barrier2_y_pos, 1, barrier2_height)
+barrier2_rect_rightline = pygame.Rect(barrier2_width, barrier2_y_pos, 1, barrier2_height)
+barrier2_rect_topline = pygame.Rect(barrier2_x_pos, barrier2_y_pos, barrier2_width, 1)
+barrier2_rect_bottomline = pygame.Rect(barrier2_x_pos, barrier2_height, barrier2_width, 1)
+
+swordwin = 0
+
 ###############################################챕터 5##########################################
 
 total_score = 0
@@ -289,7 +316,6 @@ pygame.key.set_repeat(delay, interval)
 
 while running:
     dt = clock.tick(60)
-
     # 이벤트
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -380,8 +406,9 @@ while running:
 
     while (True):
 ######################################################### 챕터 1 ####################################################################
+        totaltime = pygame.time.get_ticks()
+        print(totaltime/1000)
         if chapter == 1: 
-
         # 점수 표시
             msg = game_font.render(str(score)+" / 5", True, (255, 255, 0))
             screen.blit(msg, ((screen_width/20)*18 , screen_height / 25))
@@ -512,14 +539,24 @@ while running:
 ################################################## 챕터 3 ###################################################################   
         elif chapter == 3:  #칼 뽑기
             swordscore = 0
+            if character_rect.colliderect(barrier1_rect_bottomline):
+                character_y_pos = barrier1_y_pos + barrier1_height + 1
+            if character_rect.colliderect(barrier1_rect_rightline):
+                character_x_pos = barrier1_x_pos + barrier1_width + 1
+            if character_rect.colliderect(barrier2_rect_bottomline):
+                character_y_pos = barrier2_y_pos + barrier2_height + 1
+            if character_rect.colliderect(barrier2_rect_leftline):
+                character_x_pos = barrier2_x_pos - 1
+            if character_y_pos >= 775:
+                character_y_pos = 775
+                
             if character_x_pos >= 510 and character_x_pos <= 740 and character_y_pos >= 520 and character_y_pos <= 560:
                 backgroundnumber = 3
 
             if backgroundnumber == 3:
-
+                print(swordwin)
                 character_x_pos = 0
                 character_y_pos = 1200
-
                 if event.type == pygame.KEYDOWN:
                     if key_press == key_num[0]:
                         pygame.time.delay(150)
@@ -528,13 +565,15 @@ while running:
                         key_num[2] = key_num[3]
                         key_num[3] = random.randint(0,3)
 
-                        sword_y_pos -= 20
+                        sword_y_pos -= 2000
                     elif key_press != key_num[0]:
                         sword_y_pos += 5
                     if sword_y_pos >= 380:
                         sword_y_pos = 380
                     if sword_y_pos <= -220:
+                        swordscore = 100
                         sword_y_pos = -220
+                        swordwin = 1
                         pygame.time.delay(100)
                         msg = pygame.font.Font(None, 280).render("complete", True, (255, 255, 0))
                         msg_rect = msg.get_rect(center=(int(screen_width / 2), int(screen_height / 2)))
@@ -550,10 +589,15 @@ while running:
                         sword_y_pos = 380
                 swordscore = ((sword_y_pos - 380)/600) * 100
                 print(-swordscore, "%")
-            if character_x_pos >= screen_width*(90/100) and character_y_pos >= screen_height*(1/4) and character_y_pos <= screen_height*(1/2):
+
+            if sword_y_pos <= 300:
+                if character_y_pos <= 635:
+                    character_y_pos = 635
+            if character_x_pos >= 1230:
                 character_x_pos, character_y_pos = (screen_width/2, screen_height/2)
                 chapter = 4
             pygame.display.update()
+
         ############### 챕터 4 #############   
         elif chapter == 4:
             backgroundnumber = 4
